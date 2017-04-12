@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "entry": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "manifest": "./src/webparts/jQueryUi/JQueryUiWebPart.manifest.json",
+      "outputPath": "./dist/j-query-ui.bundle.js"
+    }
+  ],
+  "externals": {
+    "jquery":"node_modules/jquery/dist/jquery.min.js",
+    "jqueryui":"node_modules/jqueryui/jquery-ui.min.js"
+  },
+  "localizedResources": {
+    "jQueryUiStrings": "webparts/jQueryUi/loc/{locale}.js"
+  }
+}

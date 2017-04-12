@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "name": "jQueryUI Accordion Web Part",
+    "id": "72656710-0050-4375-bca3-66c52ac4fdd3",
+    "version": "1.0.0.0"
+  },
+  "paths": {
+    "zippedPackage": "solution/j-query-ui-webpart.sppkg"
+  }
+}

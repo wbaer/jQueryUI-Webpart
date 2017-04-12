@@ -1,0 +1,32 @@
+$font-stack: 'Segoe UI Light', Tahoma, Geneva, Verdana, sans-serif;
+
+*, html {
+    font: 100% $font-stack;
+}
+p {
+    font: 100% $font-stack;
+}
+.container {
+    display: block;
+    margin: 2px 0 0 0;
+    background: #007fff;
+    color: #fff;
+    border: 1px solid #003eff;
+    border-radius: 3px;
+    padding: .5em .5em .5em .7em;
+}
+.ui-resizable-helper { 
+    border: 2px dotted #003eff; 
+}
+.ui-resizable-e {
+    position: absolute;
+}
+.ui-resizable-se {
+    position: absolute;
+}
+.ui-resizable-s {
+    position: absolute;
+}
+.ui-resizable-sw {
+    position: absolute;
+}

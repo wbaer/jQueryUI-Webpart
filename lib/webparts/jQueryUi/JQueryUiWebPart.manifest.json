@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/@microsoft/sp-module-interfaces/lib/manifestSchemas/jsonSchemas/clientSideComponentManifestSchema.json",
+
+  "id": "83735038-5051-4066-80de-23d7e786f494",
+  "alias": "JQueryUiWebPart",
+  "componentType": "WebPart",
+  "version": "0.0.1",
+  "manifestVersion": 2,
+
+  "preconfiguredEntries": [{
+    "groupId": "83735038-5051-4066-80de-23d7e786f494",
+    "group": { "default": "Sample Web Parts" },
+    "title": { "default": "jQueryUI Webpart" },
+    "description": { "default": "Displays collapsible content panels for presenting information in a limited amount of space." },
+    "officeFabricIconFontName": "StackIndicator",
+    "properties": {
+      "description": "Displays collapsible content panels for presenting information in a limited amount of space.",
+      "list": "",
+      "speed": 50,
+      "resize": false,
+      "sort": false
+    }
+  }]
+}

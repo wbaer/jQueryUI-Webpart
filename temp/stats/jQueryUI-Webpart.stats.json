@@ -1,0 +1,535 @@
+{
+  "errors": [],
+  "warnings": [],
+  "version": "1.13.3",
+  "hash": "22c9578a26909030cfab",
+  "publicPath": "",
+  "assetsByChunkName": {
+    "j-query-ui.bundle": "j-query-ui.bundle.js"
+  },
+  "assets": [
+    {
+      "name": "j-query-ui.bundle.js",
+      "size": 8523,
+      "chunks": [
+        0
+      ],
+      "chunkNames": [
+        "j-query-ui.bundle"
+      ]
+    }
+  ],
+  "chunks": [
+    {
+      "id": 0,
+      "rendered": true,
+      "initial": true,
+      "entry": true,
+      "extraAsync": false,
+      "size": 22081,
+      "names": [
+        "j-query-ui.bundle"
+      ],
+      "files": [
+        "j-query-ui.bundle.js"
+      ],
+      "hash": "483e3ad94162d3c9552b",
+      "parents": [],
+      "origins": [
+        {
+          "moduleId": 0,
+          "module": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "loc": "",
+          "name": "j-query-ui.bundle",
+          "reasons": []
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": 0,
+      "identifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "name": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "index": 0,
+      "index2": 14,
+      "size": 8783,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": null,
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [],
+      "source": "\"use strict\";\nvar __extends = (this && this.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};\nvar sp_core_library_1 = require(\"@microsoft/sp-core-library\");\nvar sp_webpart_base_1 = require(\"@microsoft/sp-webpart-base\");\nvar sp_lodash_subset_1 = require(\"@microsoft/sp-lodash-subset\");\nvar sp_core_library_2 = require(\"@microsoft/sp-core-library\");\nvar JQueryUi_module_scss_1 = require(\"./JQueryUi.module.scss\");\nvar strings = require(\"jQueryUiStrings\");\n// App imports\nvar MockHttpClient_1 = require(\"./MockHttpClient\");\n// Import spHttpClient helper class to execute REST API requests against SharePoint\nvar sp_http_1 = require(\"@microsoft/sp-http\");\nvar jQuery = require(\"jquery\");\nrequire(\"jqueryui\");\nvar sp_loader_1 = require(\"@microsoft/sp-loader\");\nrequire('jqueryui');\nvar JQueryUiWebPart = (function (_super) {\n    __extends(JQueryUiWebPart, _super);\n    function JQueryUiWebPart() {\n        var _this = _super.call(this) || this;\n        // Setup the Web Part Property Pane Dropdown options\n        _this._dropdownOptions = [];\n        // Load remote stylesheet\n        sp_loader_1.SPComponentLoader.loadCss('//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css');\n        return _this;\n    }\n    // Define and retrieve mock list data\n    JQueryUiWebPart.prototype._getMockListData = function () {\n        return MockHttpClient_1.default.get(this.context.pageContext.web.absoluteUrl).then(function () {\n            var listData = {\n                value: [\n                    { Title: 'Mock List Item 1', Description: 'Mock List Data 1' },\n                    { Title: 'Mock List Item 2', Description: 'Mock List Data 2' },\n                    { Title: 'Mock List Item 3', Description: 'Mock List Data 3' },\n                    { Title: 'Mock List Item 4', Description: 'Mock List Data 4' }\n                ]\n            };\n            return listData;\n        });\n    };\n    // Retrieve list data from SharePoint\n    JQueryUiWebPart.prototype._getListData = function () {\n        return this.context.spHttpClient.get(this.context.pageContext.web.absoluteUrl + \"/_api/web/lists/GetByTitle('\" + this.properties.list + \"')/items\", sp_http_1.SPHttpClient.configurations.v1)\n            .then(function (response) {\n            return response.json();\n        });\n    };\n    // Retrieve lists from SharePoint\n    JQueryUiWebPart.prototype._getLists = function () {\n        return this.context.spHttpClient.get(this.context.pageContext.web.absoluteUrl + \"/_api/web/lists?$filter=Hidden eq false\", sp_http_1.SPHttpClient.configurations.v1)\n            .then(function (response) {\n            return response.json();\n        });\n    };\n    // Call methods for list data retrieval\n    JQueryUiWebPart.prototype._renderListAsync = function () {\n        var _this = this;\n        // Mock List data\n        if (sp_core_library_2.Environment.type === sp_core_library_2.EnvironmentType.Local) {\n            this._getMockListData().then(function (response) {\n                _this._renderList(response.value);\n            });\n        }\n        else {\n            var list = this.properties.list;\n            // Check if a list is selected\n            if (!list || list.toString == null) {\n                this.domElement.innerHTML = \"\\n      <div class=\\\"\" + JQueryUi_module_scss_1.default.container + \"\\\">\\n            <span>\" + sp_lodash_subset_1.escape(this.properties.description) + \"</span>\\n            <p>No list has been selected.  Open the tool pane and select a list.</p>\\n      </div>\\n      \";\n                return;\n            }\n            this._getListData()\n                .then(function (response) {\n                _this._renderList(response.value);\n            });\n        }\n    };\n    // Render the list data with the values fetched from the REST API\n    JQueryUiWebPart.prototype._renderList = function (items) {\n        // Clear the container for initial configuration\n        this.domElement.innerHTML = \"\";\n        // Reset the Accordion to handle property changes\n        $('#accordion').remove();\n        // Set up html for the jQuery UI Accordion Widget to display collapsible content panels\n        // Learn more about the Accordion Widget at http://jqueryui.com/accordion/\n        var html = '';\n        html += \"<div id='accordion'>\";\n        items.forEach(function (item) {\n            html += \"\\n        <div class='group'>\\n          <h3>\" + item.Title + \"</h3>\\n            <div>\\n                <p> \" + item.Description + \" </p>\\n            </div>\\n        </div>\";\n        });\n        this.domElement.innerHTML += html;\n        html += \"</div>\";\n        // Set up base Accordion options\n        var accordionOptions = {\n            header: \"> div > h3\",\n            animate: this.properties.speed,\n            collapsible: true,\n            icons: {\n                header: 'ui-icon-circle-arrow-e',\n                activeHeader: 'ui-icon-circle-arrow-s'\n            }\n        };\n        // Set up configurable jQueryUI effects and interactions\n        if (this.properties.resize == false) {\n            jQuery(this.domElement).children('#accordion').accordion(accordionOptions);\n        }\n        else {\n            jQuery(this.domElement).children('#accordion').accordion(accordionOptions).resizable({ ghost: true, animate: true, autoHide: true, helper: 'ui-resizable-helper' });\n        }\n        if (this.properties.sort == false) {\n            jQuery(this.domElement).children('#accordion').accordion(accordionOptions);\n        }\n        else {\n            jQuery(this.domElement).children('#accordion').accordion(accordionOptions).sortable();\n        }\n    };\n    JQueryUiWebPart.prototype.render = function () {\n        this._renderListAsync();\n    };\n    JQueryUiWebPart.prototype.onInit = function () {\n        var _this = this;\n        this._getLists()\n            .then(function (response) {\n            _this._dropdownOptions = response.value.map(function (list) {\n                return {\n                    key: list.Title,\n                    text: list.Title\n                };\n            });\n        });\n        return Promise.resolve();\n    };\n    Object.defineProperty(JQueryUiWebPart.prototype, \"dataVersion\", {\n        get: function () {\n            return sp_core_library_1.Version.parse('1.0');\n        },\n        enumerable: true,\n        configurable: true\n    });\n    // Set up core Property Pane options\n    JQueryUiWebPart.prototype.getPropertyPaneConfiguration = function () {\n        return {\n            pages: [\n                {\n                    header: {\n                        description: strings.PropertyPaneDescription\n                    },\n                    groups: [\n                        {\n                            groupName: strings.SharePointOptions,\n                            groupFields: [\n                                sp_webpart_base_1.PropertyPaneDropdown('list', {\n                                    label: 'List',\n                                    options: this._dropdownOptions\n                                })\n                            ]\n                        },\n                        {\n                            groupName: strings.JQueryOptions,\n                            groupFields: [\n                                sp_webpart_base_1.PropertyPaneSlider('speed', {\n                                    label: 'Animation Speed',\n                                    min: 1,\n                                    max: 500\n                                }),\n                                sp_webpart_base_1.PropertyPaneToggle('resize', {\n                                    label: 'Resizable',\n                                    onText: 'Enable',\n                                    offText: 'Disable'\n                                }),\n                                sp_webpart_base_1.PropertyPaneToggle('sort', {\n                                    label: 'Sortable',\n                                    onText: 'Enable',\n                                    offText: 'Disable'\n                                })\n                            ]\n                        }\n                    ]\n                }\n            ]\n        };\n    };\n    Object.defineProperty(JQueryUiWebPart.prototype, \"disableReactivePropertyChanges\", {\n        // Set Property Pane settings to non-reactive\n        get: function () {\n            return true;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return JQueryUiWebPart;\n}(sp_webpart_base_1.BaseClientSideWebPart));\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = JQueryUiWebPart;\n\n"
+    },
+    {
+      "id": 1,
+      "identifier": "external \"@microsoft/sp-core-library\"",
+      "name": "external \"@microsoft/sp-core-library\"",
+      "index": 1,
+      "index2": 0,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "@microsoft/sp-core-library",
+          "loc": "7:24-61"
+        },
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "@microsoft/sp-core-library",
+          "loc": "10:24-61"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "identifier": "external \"@microsoft/sp-webpart-base\"",
+      "name": "external \"@microsoft/sp-webpart-base\"",
+      "index": 2,
+      "index2": 1,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "@microsoft/sp-webpart-base",
+          "loc": "8:24-61"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "identifier": "external \"@microsoft/sp-lodash-subset\"",
+      "name": "external \"@microsoft/sp-lodash-subset\"",
+      "index": 3,
+      "index2": 2,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "@microsoft/sp-lodash-subset",
+          "loc": "9:25-63"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "identifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.scss.js",
+      "name": "./lib/webparts/jQueryUi/JQueryUi.module.scss.js",
+      "index": 4,
+      "index2": 7,
+      "size": 494,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "./JQueryUi.module.scss",
+          "loc": "11:29-62"
+        }
+      ],
+      "source": "\"use strict\";\n/* tslint:disable */\nrequire('./JQueryUi.module.css');\nvar styles = {\n    container: 'container_39b671c8',\n    'ui-resizable-helper': 'ui-resizable-helper_39b671c8',\n    'ui-resizable-e': 'ui-resizable-e_39b671c8',\n    'ui-resizable-se': 'ui-resizable-se_39b671c8',\n    'ui-resizable-s': 'ui-resizable-s_39b671c8',\n    'ui-resizable-sw': 'ui-resizable-sw_39b671c8',\n};\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = styles;\n/* tslint:enable */ \n\n"
+    },
+    {
+      "id": 5,
+      "identifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/loader-load-themed-styles/lib/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+      "name": "./lib/webparts/jQueryUi/JQueryUi.module.css",
+      "index": 5,
+      "index2": 6,
+      "size": 444,
+      "cacheable": false,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.scss.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 4,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.scss.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUi.module.scss.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUi.module.scss.js",
+          "type": "cjs require",
+          "userRequest": "./JQueryUi.module.css",
+          "loc": "3:0-32"
+        }
+      ],
+      "source": "var content = require(\"!!../../../node_modules/css-loader/index.js?-minimize!./JQueryUi.module.css\");\nvar loader = require(\"/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/load-themed-styles/lib/index.js\");\n\nif(typeof content === \"string\") content = [[module.id, content]];\n\n// add the styles to the DOM\nfor (var i = 0; i < content.length; i++) loader.loadStyles(content[i][1]);\n\nif(content.locals) module.exports = content.locals;"
+    },
+    {
+      "id": 6,
+      "identifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+      "name": "./~/css-loader?-minimize!./lib/webparts/jQueryUi/JQueryUi.module.css",
+      "index": 6,
+      "index2": 4,
+      "size": 675,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/loader-load-themed-styles/lib/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 5,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/loader-load-themed-styles/lib/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+          "module": "./lib/webparts/jQueryUi/JQueryUi.module.css",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUi.module.css",
+          "type": "cjs require",
+          "userRequest": "!!../../../node_modules/css-loader/index.js?-minimize!./JQueryUi.module.css",
+          "loc": "1:14-100"
+        }
+      ],
+      "source": "exports = module.exports = require(\"../../../node_modules/css-loader/lib/css-base.js\")();\n// imports\n\n\n// module\nexports.push([module.id, \"*,html{font:100% \\\"Segoe UI Light\\\",Tahoma,Geneva,Verdana,sans-serif}p{font:100% \\\"Segoe UI Light\\\",Tahoma,Geneva,Verdana,sans-serif}.container_39b671c8{display:block;margin:2px 0 0 0;background:#007fff;color:#fff;border:1px solid #003eff;border-radius:3px;padding:.5em .5em .5em .7em}.ui-resizable-helper_39b671c8{border:2px dotted #003eff}.ui-resizable-e_39b671c8{position:absolute}.ui-resizable-se_39b671c8{position:absolute}.ui-resizable-s_39b671c8{position:absolute}.ui-resizable-sw_39b671c8{position:absolute}\", \"\"]);\n\n// exports\n"
+    },
+    {
+      "id": 7,
+      "identifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/lib/css-base.js",
+      "name": "./~/css-loader/lib/css-base.js",
+      "index": 7,
+      "index2": 3,
+      "size": 1506,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 6,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+          "module": "./~/css-loader?-minimize!./lib/webparts/jQueryUi/JQueryUi.module.css",
+          "moduleName": "./~/css-loader?-minimize!./lib/webparts/jQueryUi/JQueryUi.module.css",
+          "type": "cjs require",
+          "userRequest": "../../../node_modules/css-loader/lib/css-base.js",
+          "loc": "1:27-86"
+        }
+      ],
+      "source": "/*\r\n\tMIT License http://www.opensource.org/licenses/mit-license.php\r\n\tAuthor Tobias Koppers @sokra\r\n*/\r\n// css base code, injected by the css-loader\r\nmodule.exports = function() {\r\n\tvar list = [];\r\n\r\n\t// return the list of modules as css string\r\n\tlist.toString = function toString() {\r\n\t\tvar result = [];\r\n\t\tfor(var i = 0; i < this.length; i++) {\r\n\t\t\tvar item = this[i];\r\n\t\t\tif(item[2]) {\r\n\t\t\t\tresult.push(\"@media \" + item[2] + \"{\" + item[1] + \"}\");\r\n\t\t\t} else {\r\n\t\t\t\tresult.push(item[1]);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn result.join(\"\");\r\n\t};\r\n\r\n\t// import a list of modules into the list\r\n\tlist.i = function(modules, mediaQuery) {\r\n\t\tif(typeof modules === \"string\")\r\n\t\t\tmodules = [[null, modules, \"\"]];\r\n\t\tvar alreadyImportedModules = {};\r\n\t\tfor(var i = 0; i < this.length; i++) {\r\n\t\t\tvar id = this[i][0];\r\n\t\t\tif(typeof id === \"number\")\r\n\t\t\t\talreadyImportedModules[id] = true;\r\n\t\t}\r\n\t\tfor(i = 0; i < modules.length; i++) {\r\n\t\t\tvar item = modules[i];\r\n\t\t\t// skip already imported module\r\n\t\t\t// this implementation is not 100% perfect for weird media query combinations\r\n\t\t\t//  when a module is imported multiple times with different media queries.\r\n\t\t\t//  I hope this will never occur (Hey this way we have smaller bundles)\r\n\t\t\tif(typeof item[0] !== \"number\" || !alreadyImportedModules[item[0]]) {\r\n\t\t\t\tif(mediaQuery && !item[2]) {\r\n\t\t\t\t\titem[2] = mediaQuery;\r\n\t\t\t\t} else if(mediaQuery) {\r\n\t\t\t\t\titem[2] = \"(\" + item[2] + \") and (\" + mediaQuery + \")\";\r\n\t\t\t\t}\r\n\t\t\t\tlist.push(item);\r\n\t\t\t}\r\n\t\t}\r\n\t};\r\n\treturn list;\r\n};\r\n"
+    },
+    {
+      "id": 8,
+      "identifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/load-themed-styles/lib/index.js",
+      "name": "./~/@microsoft/load-themed-styles/lib/index.js",
+      "index": 8,
+      "index2": 5,
+      "size": 9346,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/loader-load-themed-styles/lib/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 5,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/loader-load-themed-styles/lib/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/css-loader/index.js?-minimize!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUi.module.css",
+          "module": "./lib/webparts/jQueryUi/JQueryUi.module.css",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUi.module.css",
+          "type": "cjs require",
+          "userRequest": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/@microsoft/load-themed-styles/lib/index.js",
+          "loc": "2:13-116"
+        }
+      ],
+      "source": "/**\n * An IThemingInstruction can specify a rawString to be preserved or a theme slot and a default value\n * to use if that slot is not specified by the theme.\n */\n\"use strict\";\n// IE needs to inject styles using cssText. However, we need to evaluate this lazily, so this\n// value will initialize as undefined, and later will be set once on first loadStyles injection.\nvar _injectStylesWithCssText;\n// Store the theming state in __themeState__ global scope for reuse in the case of duplicate\n// load-themed-styles hosted on the page.\nvar _root = (typeof window === 'undefined') ? global : window; // tslint:disable-line:no-any\nvar _themeState = _root.__themeState__ = _root.__themeState__ || {\n    theme: undefined,\n    lastStyleElement: undefined,\n    registeredStyles: []\n};\n/**\n * Matches theming tokens. For example, \"[theme: themeSlotName, default: #FFF]\" (including the quotes).\n */\n/* tslint:disable: max-line-length */\nvar _themeTokenRegex = /[\\'\\\"]\\[theme:\\s*(\\w+)\\s*(?:\\,\\s*default:\\s*([\\\\\"\\']?[\\.\\,\\(\\)\\#\\-\\s\\w]*[\\.\\,\\(\\)\\#\\-\\w][\\\"\\']?))?\\s*\\][\\'\\\"]/g;\n/* tslint:enable: max-line-length */\n/** Maximum style text length, for supporting IE style restrictions. */\nvar MAX_STYLE_CONTENT_SIZE = 10000;\n/**\n * Loads a set of style text. If it is registered too early, we will register it when the window.load\n * event is fired.\n * @param {string | ThemableArray} styles Themable style text to register.\n */\nfunction loadStyles(styles) {\n    var styleParts = Array.isArray(styles) ? styles : splitStyles(styles);\n    if (_injectStylesWithCssText === undefined) {\n        _injectStylesWithCssText = shouldUseCssText();\n    }\n    applyThemableStyles(styleParts);\n}\nexports.loadStyles = loadStyles;\n/**\n * Allows for customizable loadStyles logic. e.g. for server side rendering application\n * @param {(styles: string) => void} a loadStyles callback that gets called when styles are loaded or reloaded\n */\nfunction configureLoadStyles(callback) {\n    _themeState.loadStyles = callback;\n}\nexports.configureLoadStyles = configureLoadStyles;\n/**\n * Loads a set of style text. If it is registered too early, we will register it when the window.load event\n * is fired.\n * @param {string} styleText Style to register.\n * @param {IStyleRecord} styleRecord Existing style record to re-apply.\n */\nfunction applyThemableStyles(stylesArray, styleRecord) {\n    if (_themeState.loadStyles) {\n        var styles = resolveThemableArray(stylesArray);\n        _themeState.loadStyles(styles);\n    }\n    else {\n        _injectStylesWithCssText ?\n            registerStylesIE(stylesArray, styleRecord) :\n            registerStyles(stylesArray, styleRecord);\n    }\n}\n/**\n * Registers a set theme tokens to find and replace. If styles were already registered, they will be\n * replaced.\n * @param {theme} theme JSON object of theme tokens to values.\n */\nfunction loadTheme(theme) {\n    _themeState.theme = theme;\n    // reload styles.\n    reloadStyles();\n}\nexports.loadTheme = loadTheme;\n/**\n * Reloads styles.\n */\nfunction reloadStyles() {\n    if (_themeState.theme) {\n        for (var _i = 0, _a = _themeState.registeredStyles; _i < _a.length; _i++) {\n            var styleRecord = _a[_i];\n            applyThemableStyles(styleRecord.themableStyle, styleRecord);\n        }\n    }\n}\n/**\n * Find theme tokens and replaces them with provided theme values.\n * @param {string} styles Tokenized styles to fix.\n */\nfunction detokenize(styles) {\n    if (styles) {\n        styles = resolveThemableArray(splitStyles(styles));\n    }\n    return styles;\n}\nexports.detokenize = detokenize;\n/**\n * Resolves ThemingInstruction objects in an array and joins the result into a string.\n * @param {ThemableArray} splitStyleArray ThemableArray to resolve and join.\n */\nfunction resolveThemableArray(splitStyleArray) {\n    var theme = _themeState.theme;\n    var resolvedCss;\n    if (splitStyleArray) {\n        // Resolve the array of theming instructions to an array of strings.\n        // Then join the array to produce the final CSS string.\n        var resolvedArray = splitStyleArray.map(function (currentValue) {\n            var themeSlot = currentValue.theme;\n            if (themeSlot) {\n                // A theming annotation. Resolve it.\n                var themedValue = theme ? theme[themeSlot] : undefined;\n                var defaultValue = currentValue.defaultValue;\n                // Warn to console if we hit an unthemed value even when themes are provided.\n                // Allow the themedValue to be undefined to explicitly request the default value.\n                if (theme && !themedValue && console && !(themeSlot in theme)) {\n                    /* tslint:disable: max-line-length */\n                    console.warn(\"Theming value not provided for \\\"\" + themeSlot + \"\\\". Falling back to \\\"\" + (defaultValue || 'inherit') + \"\\\".\");\n                }\n                return themedValue || defaultValue || 'inherit';\n            }\n            else {\n                // A non-themable string. Preserve it.\n                return currentValue.rawString;\n            }\n        });\n        resolvedCss = resolvedArray.join('');\n    }\n    return resolvedCss;\n}\n/**\n * Split tokenized CSS into an array of strings and theme specification objects\n * @param {string} styles Tokenized styles to split.\n */\nfunction splitStyles(styles) {\n    var result = [];\n    if (styles) {\n        var pos = 0; // Current position in styles.\n        var tokenMatch = void 0;\n        while (tokenMatch = _themeTokenRegex.exec(styles)) {\n            var matchIndex = tokenMatch.index;\n            if (matchIndex > pos) {\n                result.push({\n                    rawString: styles.substring(pos, matchIndex)\n                });\n            }\n            result.push({\n                theme: tokenMatch[1],\n                defaultValue: tokenMatch[2] // May be undefined\n            });\n            // index of the first character after the current match\n            pos = _themeTokenRegex.lastIndex;\n        }\n        // Push the rest of the string after the last match.\n        result.push({\n            rawString: styles.substring(pos)\n        });\n    }\n    return result;\n}\nexports.splitStyles = splitStyles;\n/**\n * Registers a set of style text. If it is registered too early, we will register it when the\n * window.load event is fired.\n * @param {ThemableArray} styleArray Array of IThemingInstruction objects to register.\n * @param {IStyleRecord} styleRecord May specify a style Element to update.\n */\nfunction registerStyles(styleArray, styleRecord) {\n    var head = document.getElementsByTagName('head')[0];\n    var styleElement = document.createElement('style');\n    styleElement.type = 'text/css';\n    styleElement.appendChild(document.createTextNode(resolveThemableArray(styleArray)));\n    if (styleRecord) {\n        head.replaceChild(styleElement, styleRecord.styleElement);\n        styleRecord.styleElement = styleElement;\n    }\n    else {\n        head.appendChild(styleElement);\n    }\n    if (!styleRecord) {\n        _themeState.registeredStyles.push({\n            styleElement: styleElement,\n            themableStyle: styleArray\n        });\n    }\n}\n/**\n * Registers a set of style text, for IE 9 and below, which has a ~30 style element limit so we need\n * to register slightly differently.\n * @param {ThemableArray} styleArray Array of IThemingInstruction objects to register.\n * @param {IStyleRecord} styleRecord May specify a style Element to update.\n */\nfunction registerStylesIE(styleArray, styleRecord) {\n    var head = document.getElementsByTagName('head')[0];\n    var lastStyleElement = _themeState.lastStyleElement, registeredStyles = _themeState.registeredStyles;\n    var stylesheet = lastStyleElement ? lastStyleElement.styleSheet : undefined;\n    var lastStyleContent = stylesheet ? stylesheet.cssText : '';\n    var lastRegisteredStyle = registeredStyles[registeredStyles.length - 1];\n    var resolvedStyleText = resolveThemableArray(styleArray);\n    if (!lastStyleElement || (lastStyleContent.length + resolvedStyleText.length) > MAX_STYLE_CONTENT_SIZE) {\n        lastStyleElement = document.createElement('style');\n        lastStyleElement.type = 'text/css';\n        if (styleRecord) {\n            head.replaceChild(lastStyleElement, styleRecord.styleElement);\n            styleRecord.styleElement = lastStyleElement;\n        }\n        else {\n            head.appendChild(lastStyleElement);\n        }\n        if (!styleRecord) {\n            lastRegisteredStyle = {\n                styleElement: lastStyleElement,\n                themableStyle: styleArray\n            };\n            registeredStyles.push(lastRegisteredStyle);\n        }\n    }\n    lastStyleElement.styleSheet.cssText += detokenize(resolvedStyleText);\n    Array.prototype.push.apply(lastRegisteredStyle.themableStyle, styleArray); // concat in-place\n    // Preserve the theme state.\n    _themeState.lastStyleElement = lastStyleElement;\n}\n/**\n * Checks to see if styleSheet exists as a property off of a style element.\n * This will determine if style registration should be done via cssText (<= IE9) or not\n */\nfunction shouldUseCssText() {\n    var useCSSText = false;\n    if (typeof document !== 'undefined') {\n        var emptyStyle = document.createElement('style');\n        emptyStyle.type = 'text/css';\n        useCSSText = !!emptyStyle.styleSheet;\n    }\n    return useCSSText;\n}\n\n"
+    },
+    {
+      "id": 9,
+      "identifier": "external \"jQueryUiStrings\"",
+      "name": "external \"jQueryUiStrings\"",
+      "index": 9,
+      "index2": 8,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "jQueryUiStrings",
+          "loc": "12:14-40"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "identifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/MockHttpClient.js",
+      "name": "./lib/webparts/jQueryUi/MockHttpClient.js",
+      "index": 10,
+      "index2": 9,
+      "size": 497,
+      "cacheable": true,
+      "built": true,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "./MockHttpClient",
+          "loc": "14:23-50"
+        }
+      ],
+      "source": "/// <reference path=\"JQueryUiWebPart.ts\" />\n\"use strict\";\nvar MockHttpClient = (function () {\n    function MockHttpClient() {\n    }\n    MockHttpClient.get = function (restUrl, options) {\n        return new Promise(function (resolve) {\n            resolve(MockHttpClient._items);\n        });\n    };\n    return MockHttpClient;\n}());\nMockHttpClient._items = [{ Title: 'Mock List', Description: '1' }];\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.default = MockHttpClient;\n\n"
+    },
+    {
+      "id": 11,
+      "identifier": "external \"@microsoft/sp-http\"",
+      "name": "external \"@microsoft/sp-http\"",
+      "index": 11,
+      "index2": 10,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "@microsoft/sp-http",
+          "loc": "16:16-45"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "identifier": "external \"jquery\"",
+      "name": "external \"jquery\"",
+      "index": 12,
+      "index2": 11,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "jquery",
+          "loc": "17:13-30"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "identifier": "external \"jqueryui\"",
+      "name": "external \"jqueryui\"",
+      "index": 13,
+      "index2": 12,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "jqueryui",
+          "loc": "18:0-19"
+        },
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "jqueryui",
+          "loc": "20:0-19"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "identifier": "external \"@microsoft/sp-loader\"",
+      "name": "external \"@microsoft/sp-loader\"",
+      "index": 14,
+      "index2": 13,
+      "size": 42,
+      "cacheable": false,
+      "built": false,
+      "optional": false,
+      "prefetched": false,
+      "chunks": [
+        0
+      ],
+      "assets": [],
+      "issuer": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+      "failed": false,
+      "errors": 0,
+      "warnings": 0,
+      "reasons": [
+        {
+          "moduleId": 0,
+          "moduleIdentifier": "/Users/wbaer/GitHub/jQueryUI-Webpart/node_modules/source-map-loader/index.js!/Users/wbaer/GitHub/jQueryUI-Webpart/lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "module": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "moduleName": "./lib/webparts/jQueryUi/JQueryUiWebPart.js",
+          "type": "cjs require",
+          "userRequest": "@microsoft/sp-loader",
+          "loc": "19:18-49"
+        }
+      ]
+    }
+  ],
+  "filteredModules": 0,
+  "children": []
+}
